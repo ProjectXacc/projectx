@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor and Brain Area Physiology Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .question h3 {
+            margin-bottom: 10px;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination input {
+            width: 50px;
+            text-align: center;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header>Motor and Brain Area Physiology (Sixth Block) Quiz</header>
+<div class="container">
+    <div id="quizContainer"></div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <button class="btn" id="prevButton" style="display: none;">Previous</button>
+        <button class="btn" id="nextButton">Next</button>
+        <button class="btn" id="submitButton" style="display: none;">Submit</button>
+    </div>
+
+    <!-- Page Indicator -->
+    <div class="pagination" id="pageIndicator">Page 1</div>
+
+    <!-- Go to Page -->
+    <div class="goto-page">
+        <label for="pageInput">Go to page: </label>
+        <input type="number" id="pageInput" min="1" />
+        <button class="btn" id="goButton">Go</button>
+    </div>
+</div>
+
+<script>
+    // Upper limb-specific question bank with one example question 
+    const questionBank = [
+  { question: "Which part of the brain is responsible for voluntary movement?", options: ["Cerebellum", "Medulla", "Cerebrum", "Thalamus"], answer: "Cerebrum" },
+                { question: "What is the function of the basal ganglia?", options: ["Control posture and movement", "Regulate heart rate", "Process visual information", "Maintain homeostasis"], answer: "Control posture and movement" },
+                { question: "Which area of the brain is primarily responsible for voluntary motor control?", options: ["Primary motor cortex", "Broca's area", "Wernicke's area", "Cerebellum"], answer: "Primary motor cortex" },
+  { question: "The motor homunculus represents what aspect of the motor cortex?", options: ["Body parts by degree of control", "Regions for sensory input", "Areas for language processing", "Pain pathways"], answer: "Body parts by degree of control" },
+  { question: "Where is the primary motor cortex located?", options: ["Precentral gyrus", "Postcentral gyrus", "Temporal lobe", "Parietal lobe"], answer: "Precentral gyrus" },
+  { question: "The corticospinal tract primarily controls which type of movement?", options: ["Voluntary", "Involuntary", "Reflex", "Autonomic"], answer: "Voluntary" },
+  { question: "Which part of the brain helps coordinate fine motor skills?", options: ["Cerebellum", "Medulla", "Hippocampus", "Thalamus"], answer: "Cerebellum" },
+  { question: "Which structure modulates and inhibits unwanted motor movements?", options: ["Basal ganglia", "Thalamus", "Amygdala", "Hippocampus"], answer: "Basal ganglia" },
+  { question: "What type of neurons are responsible for transmitting motor signals from the brain to the muscles?", options: ["Motor neurons", "Sensory neurons", "Interneurons", "Neuroglia"], answer: "Motor neurons" },
+  { question: "Which neurotransmitter is predominantly involved in activating muscle contraction?", options: ["Acetylcholine", "Dopamine", "Serotonin", "GABA"], answer: "Acetylcholine" },
+  { question: "What is the role of the supplementary motor area?", options: ["Planning complex movements", "Processing sensory information", "Regulating emotions", "Language comprehension"], answer: "Planning complex movements" },
+  { question: "The premotor cortex is primarily involved in which function?", options: ["Movement planning and coordination", "Emotion regulation", "Sensory integration", "Memory processing"], answer: "Movement planning and coordination" },
+
+  // Basal Ganglia and Motor Control
+  { question: "The basal ganglia receive major input from which brain area?", options: ["Cerebral cortex", "Medulla", "Cerebellum", "Pons"], answer: "Cerebral cortex" },
+  { question: "Dopamine plays a critical role in the function of which motor-related brain structure?", options: ["Basal ganglia", "Hippocampus", "Amygdala", "Thalamus"], answer: "Basal ganglia" },
+  { question: "Which basal ganglia structure is most associated with initiating movement?", options: ["Putamen", "Caudate nucleus", "Globus pallidus", "Nucleus accumbens"], answer: "Putamen" },
+  { question: "Damage to the basal ganglia can lead to which condition?", options: ["Parkinson's disease", "Alzheimer's disease", "Schizophrenia", "Bipolar disorder"], answer: "Parkinson's disease" },
+  { question: "What is the function of the globus pallidus in the basal ganglia?", options: ["Inhibitory control of movement", "Sensory processing", "Language production", "Visual processing"], answer: "Inhibitory control of movement" },
+  { question: "Huntington's disease is associated with degeneration in which area of the basal ganglia?", options: ["Caudate nucleus", "Putamen", "Substantia nigra", "Globus pallidus"], answer: "Caudate nucleus" },
+  { question: "The direct pathway of the basal ganglia has what effect on movement?", options: ["Facilitates movement", "Inhibits movement", "Controls balance", "Processes emotions"], answer: "Facilitates movement" },
+  { question: "The substantia nigra produces which neurotransmitter that is crucial for motor control?", options: ["Dopamine", "Serotonin", "Acetylcholine", "GABA"], answer: "Dopamine" },
+  { question: "Which structure in the basal ganglia is involved in the indirect pathway to inhibit movement?", options: ["Subthalamic nucleus", "Thalamus", "Amygdala", "Cerebellum"], answer: "Subthalamic nucleus" },
+  { question: "Which condition is associated with a loss of dopaminergic neurons in the substantia nigra?", options: ["Parkinson's disease", "Multiple sclerosis", "Epilepsy", "Depression"], answer: "Parkinson's disease" },
+
+  // Cerebellum and Motor Control
+  { question: "What is the primary role of the cerebellum in motor control?", options: ["Coordination and precision", "Emotional regulation", "Language processing", "Sensory processing"], answer: "Coordination and precision" },
+  { question: "Damage to the cerebellum often results in which condition?", options: ["Ataxia", "Aphasia", "Amnesia", "Agnosia"], answer: "Ataxia" },
+  { question: "Which lobe of the cerebellum is involved in coordinating body movements?", options: ["Anterior lobe", "Posterior lobe", "Flocculonodular lobe", "Temporal lobe"], answer: "Anterior lobe" },
+  { question: "The cerebellum receives sensory input primarily from which structure?", options: ["Spinal cord", "Cerebral cortex", "Hippocampus", "Amygdala"], answer: "Spinal cord" },
+  { question: "Which part of the cerebellum is associated with maintaining balance and eye movements?", options: ["Flocculonodular lobe", "Anterior lobe", "Posterior lobe", "Limbic system"], answer: "Flocculonodular lobe" },
+  { question: "What is the function of Purkinje cells in the cerebellum?", options: ["Inhibit cerebellar nuclei", "Transmit sensory information", "Generate movement commands", "Process emotions"], answer: "Inhibit cerebellar nuclei" },
+  { question: "Which tract carries information from the cerebellum to the motor cortex?", options: ["Cerebellothalamic tract", "Corticospinal tract", "Spinothalamic tract", "Vestibulospinal tract"], answer: "Cerebellothalamic tract" },
+  { question: "Cerebellar lesions typically result in which type of movement disorder?", options: ["Intention tremor", "Resting tremor", "Rigidity", "Dyskinesia"], answer: "Intention tremor" },
+  { question: "The cerebellum is connected to the brainstem via which structures?", options: ["Cerebellar peduncles", "Cranial nerves", "Basal ganglia", "Limbic system"], answer: "Cerebellar peduncles" },
+  { question: "What is the role of the cerebellum's lateral zone?", options: ["Planning and timing of movements", "Balance and posture", "Coordination of reflexes", "Processing sensory information"], answer: "Planning and timing of movements" },
+
+  // Brain Areas and Motor Learning
+  { question: "Which area of the brain is critical for learning new motor skills?", options: ["Cerebellum", "Hypothalamus", "Broca's area", "Occipital lobe"], answer: "Cerebellum" },
+  { question: "What is the function of the motor association cortex?", options: ["Planning motor actions", "Processing sensory information", "Emotional regulation", "Language comprehension"], answer: "Planning motor actions" },
+  { question: "Broca's area is primarily associated with which function?", options: ["Speech production", "Speech comprehension", "Balance", "Emotion processing"], answer: "Speech production" },
+  { question: "The reticular formation is involved in regulating what aspect of motor control?", options: ["Muscle tone", "Speech production", "Sensory processing", "Vision"], answer: "Muscle tone" },
+  { question: "Which type of learning is associated with repeated practice of a motor skill?", options: ["Motor learning", "Cognitive learning", "Sensory learning", "Spatial learning"], answer: "Motor learning" },
+  { question: "The lateral corticospinal tract primarily controls movement of which part of the body?", options: ["Distal limbs", "Head", "Axial muscles", "Internal organs"], answer: "Distal limbs" },
+  { question: "Which brain structure plays a key role in procedural memory and motor skills?", options: ["Basal ganglia", "Amygdala", "Hippocampus", "Thalamus"], answer: "Basal ganglia" },
+  { question: "Damage to which brain area would most likely affect fine motor control?", options: ["Primary motor cortex", "Occipital lobe", "Temporal lobe", "Wernicke's area"], answer: "Primary motor cortex" },
+  { question: "The medial corticospinal tract primarily controls movement of which body region?", options: ["Trunk and proximal muscles", "Hands", "Feet", "Facial muscles"], answer: "Trunk and proximal muscles" },
+  { question: "The premotor cortex is involved in which aspect of movement?", options: ["Planning and selection", "Execution", "Sensory feedback", "Reflex inhibition"], answer: "Planning and selection" },
+
+  // Reflexes and Motor Pathways
+  { question: "The monosynaptic reflex arc involves which type of response?", options: ["Direct motor response to a stimulus", "Complex multi-synaptic response", "Sensory processing only", "Emotional response"], answer: "Direct motor response to a stimulus" },
+  { question: "Which structure relays motor signals from the cerebral cortex to the spinal cord?", options: ["Pyramidal tracts", "Limbic system", "Cerebellum", "Thalamus"], answer: "Pyramidal tracts" },
+  { question: "Which pathway is responsible for voluntary motor control of the body's muscles?", options: ["Corticospinal tract", "Vestibulospinal tract", "Spinothalamic tract", "Reticulospinal tract"], answer: "Corticospinal tract" },
+  { question: "The vestibulospinal tract helps maintain what?", options: ["Posture and balance", "Language comprehension", "Memory", "Sensory feedback"], answer: "Posture and balance" },
+  { question: "Which type of motor neuron innervates muscle spindles?", options: ["Gamma motor neurons", "Alpha motor neurons", "Sensory neurons", "Interneurons"], answer: "Gamma motor neurons" },
+  { question: "The rubrospinal tract primarily influences which muscles?", options: ["Flexor muscles", "Extensor muscles", "Facial muscles", "Cardiac muscles"], answer: "Flexor muscles" },
+  { question: "Which brainstem nucleus modulates the vestibulospinal tract?", options: ["Vestibular nuclei", "Red nucleus", "Substantia nigra", "Lateral geniculate nucleus"], answer: "Vestibular nuclei" },
+  { question: "Alpha motor neurons innervate which type of muscle fibers?", options: ["Skeletal muscle fibers", "Smooth muscle fibers", "Cardiac muscle fibers", "Spindle fibers"], answer: "Skeletal muscle fibers" },
+
+
+        // Add more questions as needed
+    ];
+
+    // Shuffle and limit the question bank to a maximum of 50 questions
+    const selectedQuestions = questionBank.sort(() => 0.5 - Math.random()).slice(0, 50);
+
+    let currentPage = 0;
+    let totalScore = 0;
+
+    function displayQuestions(page) {
+        const quizContainer = document.getElementById('quizContainer');
+        quizContainer.innerHTML = ''; // Clear previous questions
+
+        const start = page * 2;  // Show 2 questions per page
+        const end = start + 2;
+        const questionsForPage = selectedQuestions.slice(start, end);
+
+        questionsForPage.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                <h3>${start + index + 1}. ${q.question}</h3>
+                <div class="options">
+                    ${q.options.map((option, idx) => `
+                        <label>
+                            <input type="radio" name="question${start + index}" value="${option}">
+                            ${option}
+                        </label><br>
+                    `).join('')}
+                </div>
+            `;
+            quizContainer.appendChild(questionDiv);
+        });
+
+        // Update pagination and button visibility
+        document.getElementById('pageIndicator').textContent = `Page ${page + 1} of ${Math.ceil(selectedQuestions.length / 2)}`;
+        document.getElementById('prevButton').style.display = currentPage === 0 ? 'none' : 'inline-block';
+        document.getElementById('nextButton').style.display = (currentPage === Math.ceil(selectedQuestions.length / 2) - 1) ? 'none' : 'inline-block';
+        document.getElementById('submitButton').style.display = (currentPage === Math.ceil(selectedQuestions.length / 2) - 1) ? 'inline-block' : 'none';
+    }
+
+    function calculateScore() {
+        totalScore = 0;
+        selectedQuestions.forEach((q, index) => {
+            const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+            if (selectedOption && selectedOption.value === q.answer) {
+                totalScore++;
+            }
+        });
+    }
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        currentPage++;
+        displayQuestions(currentPage);
+    });
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            displayQuestions(currentPage);
+        }
+    });
+
+    document.getElementById('goButton').addEventListener('click', () => {
+        const pageInput = document.getElementById('pageInput').value;
+        const pageIndex = parseInt(pageInput) - 1;
+
+        if (pageIndex >= 0 && pageIndex < Math.ceil(selectedQuestions.length / 2)) {
+            currentPage = pageIndex;
+            displayQuestions(currentPage);
+        }
+    });
+
+    document.getElementById('submitButton').addEventListener('click', () => {
+        calculateScore();
+        const quizContainer = document.getElementById('quizContainer');
+        quizContainer.innerHTML = `<h2>Your Score: ${totalScore} / ${selectedQuestions.length}</h2>`;
+        document.getElementById('prevButton').style.display = 'none';
+        document.getElementById('nextButton').style.display = 'none';
+        document.getElementById('submitButton').style.display = 'none';
+        document.getElementById('pageInput').style.display = 'none';
+        document.getElementById('goButton').style.display = 'none';
+    });
+
+    // Initialize quiz
+    displayQuestions(currentPage);
+</script>
+
+</body>
+</html>

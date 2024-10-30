@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Login - Project X</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 50px;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .login-container input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .login-container input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .login-container input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login to Take Quiz</h2>
+        <form id="loginForm">
+            <input type="text" id="accessCode" placeholder="Enter Access Code" required>
+            <input type="submit" value="Login">
+        </form>
+        <p class="error" id="errorMessage"></p>
+    </div>
+
+    <script>
+        // Predefined access codes with generation date
+        const accessCodes = {
+            'ABCD1234': new Date('2024-10-01'),  // Example valid code
+            'XYZ7890': new Date('2024-09-15')   // Another example
+        };
+
+        // Function to check if code is valid and not expired
+        function isValidCode(inputCode) {
+            const currentDate = new Date();
+            if (accessCodes[inputCode]) {
+                const codeDate = accessCodes[inputCode];
+                const diffInDays = (currentDate - codeDate) / (1000 * 60 * 60 * 24); // difference in days
+                if (diffInDays < 30) {
+                    return true; // Code is valid and within 30 days
+                }
+            }
+            return false; // Invalid or expired code
+        }
+
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form from submitting the traditional way
+            const inputCode = document.getElementById('accessCode').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (isValidCode(inputCode)) {
+                // Redirect to the quiz page if code is valid
+                window.location.href = "quiz_page.html"; // Replace with the actual quiz page
+            } else {
+                errorMessage.textContent = "Invalid or Expired Code!";
+            }
+        });
+    </script>
+</body>
+</html>

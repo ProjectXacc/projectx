@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upper Limb Anatomy Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .question h3 {
+            margin-bottom: 10px;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination input {
+            width: 50px;
+            text-align: center;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header>Medical Biochemistry Second Block Quiz</header>
+<div class="container">
+    <div id="quizContainer"></div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <button class="btn" id="prevButton" style="display: none;">Previous</button>
+        <button class="btn" id="nextButton">Next</button>
+        <button class="btn" id="submitButton" style="display: none;">Submit</button>
+    </div>
+
+    <!-- Page Indicator -->
+    <div class="pagination" id="pageIndicator">Page 1</div>
+
+    <!-- Go to Page -->
+    <div class="goto-page">
+        <label for="pageInput">Go to page: </label>
+        <input type="number" id="pageInput" min="1" />
+        <button class="btn" id="goButton">Go</button>
+    </div>
+</div>
+
+<script>
+    // Mdb2-specific question bank with one example question
+    const questionBank = [
+        { question: "Which molecule is the primary carrier of chemical energy in cells?", options: ["ATP", "DNA", "RNA", "GTP"], answer: "ATP" },
+                { "question": "Which type of metabolism involves the breakdown of organic molecules to release energy?", "options": ["Anabolism", "Catabolism", "Fermentation", "Photosynthesis"], "answer": "Catabolism" },
+        { "question": "What is the primary energy currency of the cell?", "options": ["ATP", "NADH", "FADH2", "GTP"], "answer": "ATP" },
+        { "question": "Which process do microorganisms use to generate energy in anaerobic conditions?", "options": ["Aerobic respiration", "Fermentation", "Krebs cycle", "Oxidative phosphorylation"], "answer": "Fermentation" },
+        { "question": "Which pathway is involved in glucose catabolism under aerobic conditions?", "options": ["Glycolysis", "Fermentation", "Krebs cycle", "Pentose phosphate pathway"], "answer": "Krebs cycle" },
+        { "question": "What is the end product of fermentation of glucose by yeast?", "options": ["Ethanol", "Lactic acid", "Acetic acid", "Butyric acid"], "answer": "Ethanol" },
+        { "question": "In which cellular compartment does the Krebs cycle occur in eukaryotes?", "options": ["Cytoplasm", "Mitochondria", "Nucleus", "Endoplasmic reticulum"], "answer": "Mitochondria" },
+        { "question": "Which enzyme catalyzes the conversion of glucose to glucose-6-phosphate?", "options": ["Hexokinase", "Phosphofructokinase", "Glycogen phosphorylase", "Lactate dehydrogenase"], "answer": "Hexokinase" },
+        { "question": "Which metabolic pathway generates NADPH for biosynthetic reactions?", "options": ["Glycolysis", "Krebs cycle", "Pentose phosphate pathway", "Beta-oxidation"], "answer": "Pentose phosphate pathway" },
+        { "question": "The process of converting nitrogen gas into ammonia is called?", "options": ["Nitrogen fixation", "Nitrification", "Denitrification", "Ammonification"], "answer": "Nitrogen fixation" },
+        { "question": "Which type of microorganisms primarily use the Entner-Doudoroff pathway?", "options": ["Gram-positive bacteria", "Gram-negative bacteria", "Archaea", "Fungi"], "answer": "Gram-negative bacteria" },
+        { "question": "The main purpose of the electron transport chain is to?", "options": ["Produce ATP", "Generate NADH", "Convert glucose to pyruvate", "Synthesize fatty acids"], "answer": "Produce ATP" },
+        { "question": "In anaerobic respiration, which molecule is commonly used as a terminal electron acceptor?", "options": ["Oxygen", "Nitrate", "Sulfate", "Carbon dioxide"], "answer": "Nitrate" },
+        { "question": "Which type of fermentation occurs in muscle cells during intense exercise?", "options": ["Alcoholic fermentation", "Lactic acid fermentation", "Acetic acid fermentation", "Mixed acid fermentation"], "answer": "Lactic acid fermentation" },
+        { "question": "What is the primary function of coenzymes in metabolism?", "options": ["Act as substrates", "Act as catalysts", "Transfer electrons or functional groups", "Store energy"], "answer": "Transfer electrons or functional groups" },
+        { "question": "What is produced during the beta-oxidation of fatty acids?", "options": ["Acetyl-CoA", "Glycerol", "NADH", "ATP"], "answer": "Acetyl-CoA" },
+        { "question": "Which vitamin is a precursor for NAD+ synthesis?", "options": ["Thiamine", "Riboflavin", "Niacin", "Pyridoxine"], "answer": "Niacin" },
+        { "question": "The TCA cycle is also known as the?", "options": ["Krebs cycle", "Glycolysis", "Pentose phosphate pathway", "Beta-oxidation"], "answer": "Krebs cycle" },
+        { "question": "Which type of microorganism is most likely to perform photosynthesis?", "options": ["Bacteria", "Fungi", "Viruses", "Protozoa"], "answer": "Bacteria" },
+        { "question": "Which of the following processes is NOT a part of aerobic respiration?", "options": ["Glycolysis", "Krebs cycle", "Fermentation", "Electron transport chain"], "answer": "Fermentation" },
+        { "question": "What is the primary function of the pentose phosphate pathway?", "options": ["ATP production", "NADPH production", "Amino acid synthesis", "Nucleotide synthesis"], "answer": "NADPH production" },
+        { "question": "Which metabolic process involves the incorporation of carbon dioxide into organic compounds?", "options": ["Carbon fixation", "Fermentation", "Glycolysis", "Oxidative phosphorylation"], "answer": "Carbon fixation" },
+        { "question": "What is the byproduct of the anaerobic metabolism of glucose in lactic acid bacteria?", "options": ["Ethanol", "Lactic acid", "Carbon dioxide", "Acetic acid"], "answer": "Lactic acid" },
+        { "question": "Which metabolic pathway do strict anaerobes primarily rely on for energy production?", "options": ["Aerobic respiration", "Fermentation", "Krebs cycle", "Glycolysis"], "answer": "Fermentation" },
+        { "question": "Which compound is a key intermediate in both glycolysis and the Krebs cycle?", "options": ["Glucose", "Pyruvate", "Acetyl-CoA", "Oxaloacetate"], "answer": "Acetyl-CoA" },
+        { "question": "Which enzyme is responsible for the conversion of pyruvate to acetyl-CoA?", "options": ["Pyruvate kinase", "Lactate dehydrogenase", "Pyruvate dehydrogenase", "Aldolase"], "answer": "Pyruvate dehydrogenase" },
+        { "question": "Which of the following is a terminal electron acceptor used by certain bacteria during anaerobic respiration?", "options": ["Oxygen", "Sulfate", "Glucose", "Nitrate"], "answer": "Sulfate" },
+        { "question": "What is the main product of the glycolytic pathway?", "options": ["NADH", "ATP", "Acetyl-CoA", "Pyruvate"], "answer": "Pyruvate" },
+        { "question": "In bacteria, which structure is involved in ATP production through oxidative phosphorylation?", "options": ["Plasma membrane", "Nucleus", "Ribosome", "Cell wall"], "answer": "Plasma membrane" },
+        { "question": "Which metabolic pathway produces the most ATP per glucose molecule?", "options": ["Fermentation", "Anaerobic respiration", "Aerobic respiration", "Glycolysis"], "answer": "Aerobic respiration" },
+        { "question": "What type of microorganism primarily utilizes nitrogen fixation?", "options": ["Bacteria", "Viruses", "Fungi", "Algae"], "answer": "Bacteria" },
+        { "question": "Which of the following is NOT a product of glycolysis?", "options": ["ATP", "NADH", "Acetyl-CoA", "Pyruvate"], "answer": "Acetyl-CoA" },
+        { "question": "What is the function of ATP synthase in the electron transport chain?", "options": ["To transport electrons", "To produce ATP", "To pump protons", "To oxidize NADH"], "answer": "To produce ATP" },
+        { "question": "In what cellular location does glycolysis occur?", "options": ["Cytoplasm", "Mitochondria", "Nucleus", "Endoplasmic reticulum"], "answer": "Cytoplasm" },
+        { "question": "Which factor can inhibit enzyme activity?", "options": ["Temperature", "pH", "Substrate concentration", "All of the above"], "answer": "All of the above" },
+        { "question": "The process by which bacteria can directly utilize atmospheric nitrogen is called?", "options": ["Nitrification", "Ammonification", "Nitrogen fixation", "Denitrification"], "answer": "Nitrogen fixation" },
+        { "question": "Which of the following enzymes is involved in the breakdown of hydrogen peroxide?", "options": ["Catalase", "Lactate dehydrogenase", "Hexokinase", "Aldose reductase"], "answer": "Catalase" },
+        { "question": "Which pathway is utilized by bacteria to ferment glucose to lactic acid?", "options": ["Pentose phosphate pathway", "Krebs cycle", "Lactic acid fermentation", "Glycolysis"], "answer": "Lactic acid fermentation" },
+        { "question": "What is the fate of pyruvate under anaerobic conditions in yeast?", "options": ["Converted to acetyl-CoA", "Converted to ethanol", "Converted to lactic acid", "Remains unchanged"], "answer": "Converted to ethanol" },
+
+
+        // Add more questions as needed
+    ];
+
+    // Shuffle and limit the question bank to a maximum of 50 questions
+    const selectedQuestions = questionBank.sort(() => 0.5 - Math.random()).slice(0, 50);
+
+    let currentPage = 0;
+    let totalScore = 0;
+
+    function displayQuestions(page) {
+        const quizContainer = document.getElementById('quizContainer');
+        quizContainer.innerHTML = ''; // Clear previous questions
+
+        const start = page * 2;  // Show 2 questions per page
+        const end = start + 2;
+        const questionsForPage = selectedQuestions.slice(start, end);
+
+        questionsForPage.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                <h3>${start + index + 1}. ${q.question}</h3>
+                <div class="options">
+                    ${q.options.map((option, idx) => `
+                        <label>
+                            <input type="radio" name="question${start + index}" value="${option}">
+                            ${option}
+                        </label><br>
+                    `).join('')}
+                </div>
+            `;
+            quizContainer.appendChild(questionDiv);
+        });
+
+        // Update pagination and button visibility
+        document.getElementById('pageIndicator').textContent = `Page ${page + 1} of ${Math.ceil(selectedQuestions.length / 2)}`;
+        document.getElementById('prevButton').style.display = currentPage === 0 ? 'none' : 'inline-block';
+        document.getElementById('nextButton').style.display = (currentPage === Math.ceil(selectedQuestions.length / 2) - 1) ? 'none' : 'inline-block';
+        document.getElementById('submitButton').style.display = (currentPage === Math.ceil(selectedQuestions.length / 2) - 1) ? 'inline-block' : 'none';
+    }
+
+    function calculateScore() {
+        totalScore = 0;
+        selectedQuestions.forEach((q, index) => {
+            const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+            if (selectedOption && selectedOption.value === q.answer) {
+                totalScore++;
+            }
+        });
+    }
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        currentPage++;
+        displayQuestions(currentPage);
+    });
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            displayQuestions(currentPage);
+        }
+    });
+
+    document.getElementById('goButton').addEventListener('click', () => {
+        const pageInput = document.getElementById('pageInput').value;
+        const pageIndex = parseInt(pageInput) - 1;
+
+        if (pageIndex >= 0 && pageIndex < Math.ceil(selectedQuestions.length / 2)) {
+            currentPage = pageIndex;
+            displayQuestions(currentPage);
+        }
+    });
+
+    document.getElementById('submitButton').addEventListener('click', () => {
+        calculateScore();
+        const quizContainer = document.getElementById('quizContainer');
+        quizContainer.innerHTML = `<h2>Your Score: ${totalScore} / ${selectedQuestions.length}</h2>`;
+        document.getElementById('prevButton').style.display = 'none';
+        document.getElementById('nextButton').style.display = 'none';
+        document.getElementById('submitButton').style.display = 'none';
+        document.getElementById('pageInput').style.display = 'none';
+        document.getElementById('goButton').style.display = 'none';
+    });
+
+    // Initialize quiz
+    displayQuestions(currentPage);
+</script>
+
+</body>
+</html>

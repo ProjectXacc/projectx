@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upper Limb Anatomy Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .question h3 {
+            margin-bottom: 10px;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination input {
+            width: 50px;
+            text-align: center;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header>T.A.P.P Anatomy Quiz</header>
+<div class="container">
+    <div id="quizContainer"></div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <button class="btn" id="prevButton" style="display: none;">Previous</button>
+        <button class="btn" id="nextButton">Next</button>
+        <button class="btn" id="submitButton" style="display: none;">Submit</button>
+    </div>
+
+    <!-- Page Indicator -->
+    <div class="pagination" id="pageIndicator">Page 1</div>
+
+    <!-- Go to Page -->
+    <div class="goto-page">
+        <label for="pageInput">Go to page: </label>
+        <input type="number" id="pageInput" min="1" />
+        <button class="btn" id="goButton">Go</button>
+    </div>
+</div>
+
+<script>
+    // T.A.P.P -specific question bank with one example question
+    const questionBank = [
+      { question: "Which organ is found in the right upper quadrant of the abdomen?", options: ["Liver", "Stomach", "Spleen", "Pancreas"], answer: "Liver" },
+                { question: "The diaphragm is innervated by which nerve?", options: ["Phrenic", "Vagus", "Radial", "Sciatic"], answer: "Phrenic" },
+                { question: "Which muscle forms the anterior wall of the abdomen?", options: ["Rectus abdominis", "Transversus abdominis", "Internal oblique", "External oblique"], answer: "Rectus abdominis" },
+        { question: "What is the primary function of the diaphragm?", options: ["Breathing", "Digestion", "Circulation", "Excretion"], answer: "Breathing" },
+        { question: "Which structure is the central part of the thoracic cavity?", options: ["Mediastinum", "Pleura", "Lungs", "Heart"], answer: "Mediastinum" },
+        { question: "The pelvic cavity is bounded inferiorly by which structure?", options: ["Pelvic diaphragm", "Abdominal wall", "Ilium", "Sacrum"], answer: "Pelvic diaphragm" },
+        { question: "What is the main arterial supply to the thoracic wall?", options: ["Intercostal arteries", "Subclavian arteries", "Carotid arteries", "Brachial arteries"], answer: "Intercostal arteries" },
+        { question: "The primary muscle responsible for inhalation is the:", options: ["Diaphragm", "Intercostal muscles", "Sternocleidomastoid", "Scalenes"], answer: "Diaphragm" },
+        { question: "Which organ is located in the right upper quadrant of the abdomen?", options: ["Spleen", "Liver", "Stomach", "Appendix"], answer: "Liver" },
+        { question: "The perineum is divided into which two regions?", options: ["Urogenital and anal", "Anterior and posterior", "Superior and inferior", "Left and right"], answer: "Urogenital and anal" },
+        { question: "Which of the following structures is NOT part of the mediastinum?", options: ["Heart", "Thymus", "Lungs", "Aorta"], answer: "Lungs" },
+        { question: "What is the primary function of the rectus sheath?", options: ["Supports abdominal contents", "Protects thoracic organs", "Facilitates respiration", "Aids in digestion"], answer: "Supports abdominal contents" },
+        { question: "Which muscle aids in forced expiration?", options: ["Internal intercostals", "External intercostals", "Serratus anterior", "Pectoralis major"], answer: "Internal intercostals" },
+        { question: "Which structure separates the thoracic cavity from the abdominal cavity?", options: ["Diaphragm", "Thoracic duct", "Pleura", "Peritoneum"], answer: "Diaphragm" },
+        { question: "The inguinal canal is located in which region of the body?", options: ["Abdomen", "Thorax", "Pelvis", "Perineum"], answer: "Abdomen" },
+        { question: "What is the primary action of the external oblique muscle?", options: ["Trunk rotation", "Trunk flexion", "Lateral flexion", "All of the above"], answer: "All of the above" },
+        { question: "The pelvic inlet is bounded by which structures?", options: ["Pelvic brim", "Ischial tuberosities", "Pubic symphysis", "Sacrum"], answer: "Pelvic brim" },
+        { question: "Which nerve innervates the diaphragm?", options: ["Phrenic nerve", "Vagus nerve", "Intercostal nerves", "Lumbar plexus"], answer: "Phrenic nerve" },
+        { question: "The thoracic aorta branches into which major arteries?", options: ["Bronchial arteries", "Intercostal arteries", "Esophageal arteries", "All of the above"], answer: "All of the above" },
+        { question: "Which muscle is located in the anterior abdominal wall?", options: ["Transversus abdominis", "Psoas major", "Iliacus", "Quadratus lumborum"], answer: "Transversus abdominis" },
+        { question: "What is the largest organ in the abdominal cavity?", options: ["Liver", "Spleen", "Kidney", "Pancreas"], answer: "Liver" },
+        { question: "The costal margin is formed by which ribs?", options: ["True ribs", "False ribs", "Floating ribs", "All ribs"], answer: "False ribs" },
+        { question: "What is the primary function of the peritoneum?", options: ["Protects abdominal organs", "Facilitates digestion", "Supports thoracic structures", "Regulates respiration"], answer: "Protects abdominal organs" },
+        { question: "The gallbladder is located in which quadrant of the abdomen?", options: ["Right upper quadrant", "Left upper quadrant", "Right lower quadrant", "Left lower quadrant"], answer: "Right upper quadrant" },
+        { question: "Which structure transports bile from the liver?", options: ["Bile duct", "Hepatic artery", "Cystic duct", "Pancreatic duct"], answer: "Bile duct" },
+        { question: "The urethra passes through which part of the perineum?", options: ["Urogenital triangle", "Anal triangle", "Pelvic diaphragm", "Abdominal cavity"], answer: "Urogenital triangle" },
+        { question: "Which of the following is a function of the spleen?", options: ["Filters blood", "Stores red blood cells", "Produces lymphocytes", "All of the above"], answer: "All of the above" },
+        { question: "The pelvic floor is composed of which muscles?", options: ["Levator ani", "Coccygeus", "Perineal muscles", "All of the above"], answer: "All of the above" },
+        { question: "Which artery supplies blood to the abdominal wall?", options: ["Inferior epigastric artery", "Superficial epigastric artery", "Celiac trunk", "Aorta"], answer: "Inferior epigastric artery" },
+        { question: "The pubic symphysis is classified as which type of joint?", options: ["Cartilaginous joint", "Synovial joint", "Fibrous joint", "Suture joint"], answer: "Cartilaginous joint" },
+        { question: "Which nerve is responsible for the sensation of the perineum?", options: ["Pudendal nerve", "Splanchnic nerve", "Femoral nerve", "Obturator nerve"], answer: "Pudendal nerve" },
+        { question: "Which of the following is NOT part of the thoracic cavity?", options: ["Pleura", "Lungs", "Diaphragm", "Kidneys"], answer: "Kidneys" },
+        { question: "What is the main action of the rectus abdominis?", options: ["Flexion of the trunk", "Extension of the trunk", "Rotation of the trunk", "Lateral flexion"], answer: "Flexion of the trunk" },
+        { question: "Which structure is located posterior to the stomach?", options: ["Spleen", "Liver", "Pancreas", "Kidney"], answer: "Pancreas" },
+        { question: "The thoracic duct drains lymph into which vein?", options: ["Subclavian vein", "Jugular vein", "Brachiocephalic vein", "Azygos vein"], answer: "Subclavian vein" },
+        { question: "Which muscle helps in forced expiration?", options: ["Transversus thoracis", "Serratus posterior", "External intercostals", "Internal intercostals"], answer: "Internal intercostals" },
+        { question: "What is the primary muscle involved in urination?", options: ["Detrusor muscle", "Transversus abdominis", "Sphincter muscle", "Rectus abdominis"], answer: "Detrusor muscle" },
+        { question: "The major blood supply to the pelvic region comes from which artery?", options: ["Internal iliac artery", "External iliac artery", "Femoral artery", "Aorta"], answer: "Internal iliac artery" },
+        { question: "What is the main function of the pelvic diaphragm?", options: ["Supports pelvic organs", "Facilitates respiration", "Aids in digestion", "Protects thoracic organs"], answer: "Supports pelvic organs" },
+        { question: "Which muscle forms the floor of the mouth?", options: ["Digastric", "Mylohyoid", "Sternohyoid", "Geniohyoid"], answer: "Mylohyoid" },
+        { question: "The major nerve supply to the abdominal wall is provided by which nerves?", options: ["Thoracoabdominal nerves", "Lumbar nerves", "Sacral nerves", "Cervical nerves"], answer: "Thoracoabdominal nerves" },
+        { question: "What is the main function of the liver?", options: ["Detoxification", "Production of bile", "Metabolism", "All of the above"], answer: "All of the above" },
+        { question: "Which structure is commonly referred to as the 'voice box'?", options: ["Larynx", "Pharynx", "Trachea", "Esophagus"], answer: "Larynx" },
+        { question: "The anterior boundary of the abdomen is formed by which muscles?", options: ["Rectus abdominis", "Internal obliques", "External obliques", "All of the above"], answer: "All of the above" },
+        { question: "What is the main arterial supply to the pelvic region?", options: ["Internal iliac artery", "External iliac artery", "Femoral artery", "Aorta"], answer: "Internal iliac artery" },
+        { question: "Which muscle is primarily responsible for extension of the spine?", options: ["Erector spinae", "Rectus abdominis", "Psoas major", "Quadratus lumborum"], answer: "Erector spinae" },
+        { question: "Which ligament supports the uterus?", options: ["Round ligament", "Suspensory ligament", "Broad ligament", "Ovarian ligament"], answer: "Broad ligament" },
+
+        // Add more questions as needed
+    ];
+
+    // Shuffle and limit the question bank to a maximum of 50 questions
+    const selectedQuestions = questionBank.sort(() => 0.5 - Math.random()).slice(0, 50);
+
+    let currentPage = 0;
+    let totalScore = 0;
+
+    function displayQuestions(page) {
+        const quizContainer = document.getElementById('quizContainer');
+        quizContainer.innerHTML = ''; // Clear previous questions
+
+        const start = page * 2;  // Show 2 questions per page
+        const end = start + 2;
+        const questionsForPage = selectedQuestions.slice(start, end);
+
+        questionsForPage.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                <h3>${start + index + 1}. ${q.question}</h3>
+                <div class="options">
+                    ${q.options.map((option, idx) => `
+                        <label>
+                            <input type="radio" name="question${start + index}" value="${option}">
+                            ${option}
+                        </label><br>
+                    `).join('')}
+                </div>
+            `;
+            quizContainer.appendChild(questionDiv);
+        });
+
+        // Update pagination and button visibility
+        document.getElementById('pageIndicator').textContent = `Page ${page + 1} of ${Math.ceil(selectedQuestions.length / 2)}`;
+        document.getElementById('prevButton').style.display = currentPage === 0 ? 'none' : 'inline-block';
+        document.getElementById('nextButton').style.display = (currentPage === Math.ceil(selectedQuestions.length / 2) - 1) ? 'none' : 'inline-block';
+        document.getElementById('submitButton').style.display = (currentPage === Math.ceil(selectedQuestions.length / 2) - 1) ? 'inline-block' : 'none';
+    }
+
+    function calculateScore() {
+        totalScore = 0;
+        selectedQuestions.forEach((q, index) => {
+            const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+            if (selectedOption && selectedOption.value === q.answer) {
+                totalScore++;
+            }
+        });
+    }
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        currentPage++;
+        displayQuestions(currentPage);
+    });
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            displayQuestions(currentPage);
+        }
+    });
+
+    document.getElementById('goButton').addEventListener('click', () => {
+        const pageInput = document.getElementById('pageInput').value;
+        const pageIndex = parseInt(pageInput) - 1;
+
+        if (pageIndex >= 0 && pageIndex < Math.ceil(selectedQuestions.length / 2)) {
+            currentPage = pageIndex;
+            displayQuestions(currentPage);
+        }
+    });
+
+    document.getElementById('submitButton').addEventListener('click', () => {
+        calculateScore();
+        const quizContainer = document.getElementById('quizContainer');
+        quizContainer.innerHTML = `<h2>Your Score: ${totalScore} / ${selectedQuestions.length}</h2>`;
+        document.getElementById('prevButton').style.display = 'none';
+        document.getElementById('nextButton').style.display = 'none';
+        document.getElementById('submitButton').style.display = 'none';
+        document.getElementById('pageInput').style.display = 'none';
+        document.getElementById('goButton').style.display = 'none';
+    });
+
+    // Initialize quiz
+    displayQuestions(currentPage);
+</script>
+
+</body>
+</html>

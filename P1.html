@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geneal Physiology Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .question h3 {
+            margin-bottom: 10px;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination input {
+            width: 50px;
+            text-align: center;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header>General  Physiology (First Block) Quiz</header>
+<div class="container">
+    <div id="quizContainer"></div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <button class="btn" id="prevButton" style="display: none;">Previous</button>
+        <button class="btn" id="nextButton">Next</button>
+        <button class="btn" id="submitButton" style="display: none;">Submit</button>
+    </div>
+
+    <!-- Page Indicator -->
+    <div class="pagination" id="pageIndicator">Page 1</div>
+
+    <!-- Go to Page -->
+    <div class="goto-page">
+        <label for="pageInput">Go to page: </label>
+        <input type="number" id="pageInput" min="1" />
+        <button class="btn" id="goButton">Go</button>
+    </div>
+</div>
+
+<script>
+    // Upper limb-specific question bank with one example question
+    const questionBank = [
+   
+                { question: "What is the primary role of erythropoietin?", options: ["Regulate blood pressure", "Stimulate red blood cell production", "Enhance platelet aggregation", "Increase white blood cell count"], answer: "Stimulate red blood cell production" },
+                { question: "What is the term for the movement of substances from an area of higher concentration to an area of lower concentration?", options: ["Active transport", "Facilitated diffusion", "Simple diffusion", "Osmosis"], answer: "Simple diffusion" },
+                              { question: "What is the primary role of erythropoietin?", options: ["Regulate blood pressure", "Stimulate red blood cell production", "Enhance platelet aggregation", "Increase white blood cell count"], answer: "Stimulate red blood cell production" },
+    { question: "Which part of the brain regulates autonomic functions such as heart rate and blood pressure?", options: ["Cerebrum", "Cerebellum", "Hypothalamus", "Medulla oblongata"], answer: "Medulla oblongata" },
+    { question: "What is the normal range of arterial blood pH in humans?", options: ["6.8-7.2", "7.35-7.45", "7.5-7.8", "8.0-8.5"], answer: "7.35-7.45" },
+    { question: "Which type of leukocyte is primarily involved in the immune response?", options: ["Erythrocytes", "Neutrophils", "Monocytes", "Basophils"], answer: "Neutrophils" },
+    { question: "What is the primary function of hemoglobin?", options: ["Transport oxygen", "Clot blood", "Regulate temperature", "Fight infections"], answer: "Transport oxygen" },
+    { question: "What is the role of the spleen in the circulatory system?", options: ["Filter blood and recycle iron", "Produce insulin", "Store bile", "Regulate blood pressure"], answer: "Filter blood and recycle iron" },
+    { question: "Which vitamin is essential for the synthesis of clotting factors?", options: ["Vitamin A", "Vitamin B12", "Vitamin C", "Vitamin K"], answer: "Vitamin K" },
+    { question: "What is the main site of gas exchange in the lungs?", options: ["Bronchi", "Alveoli", "Trachea", "Larynx"], answer: "Alveoli" },
+    { question: "What condition is characterized by an increased number of red blood cells?", options: ["Anemia", "Leukemia", "Polycythemia", "Thrombocytopenia"], answer: "Polycythemia" },
+    { question: "Which blood type is known as the universal recipient?", options: ["A", "B", "AB", "O"], answer: "AB" },
+    { question: "What component of blood is primarily responsible for maintaining osmotic pressure?", options: ["Red blood cells", "White blood cells", "Platelets", "Plasma proteins"], answer: "Plasma proteins" },
+    { question: "What is the primary function of lymphocytes?", options: ["Transport oxygen", "Produce antibodies", "Clot blood", "Phagocytize pathogens"], answer: "Produce antibodies" },
+    { question: "Which organ produces the hormone erythropoietin?", options: ["Liver", "Kidney", "Spleen", "Bone marrow"], answer: "Kidney" },
+    { question: "What is the main role of platelets in the blood?", options: ["Transport oxygen", "Initiate clotting process", "Regulate body temperature", "Fight infections"], answer: "Initiate clotting process" },
+    { question: "What is the average lifespan of a red blood cell?", options: ["10 days", "30 days", "120 days", "1 year"], answer: "120 days" },
+    { question: "Which condition is caused by a deficiency in vitamin B12?", options: ["Iron-deficiency anemia", "Sickle cell anemia", "Pernicious anemia", "Hemolytic anemia"], answer: "Pernicious anemia" },
+    { question: "What is the primary electrolyte in extracellular fluid?", options: ["Potassium", "Sodium", "Calcium", "Chloride"], answer: "Sodium" },
+    { question: "Which structure prevents backflow of blood in the heart?", options: ["Valves", "Septum", "Aorta", "Coronary arteries"], answer: "Valves" },
+    { question: "What is the main function of the cardiovascular system?", options: ["Transport nutrients and oxygen", "Regulate body temperature", "Maintain fluid balance", "All of the above"], answer: "Transport nutrients and oxygen" },
+    { question: "What is the primary cause of anemia?", options: ["Inadequate red blood cell production", "Excessive white blood cell production", "Increased platelet destruction", "High blood pressure"], answer: "Inadequate red blood cell production" },
+    { question: "Which part of the blood is primarily responsible for immune defense?", options: ["Red blood cells", "White blood cells", "Platelets", "Plasma"], answer: "White blood cells" },
+    { question: "What is the main action of anticoagulants?", options: ["Increase blood pressure", "Prevent clot formation", "Promote red blood cell production", "Enhance platelet function"], answer: "Prevent clot formation" },
+    { question: "What is the normal range for white blood cell count?", options: ["4,000-11,000 cells/µL", "1,000-4,000 cells/µL", "11,000-20,000 cells/µL", "20,000-30,000 cells/µL"], answer: "4,000-11,000 cells/µL" },
+    { question: "Which condition is characterized by a low platelet count?", options: ["Thrombocytopenia", "Polycythemia", "Leukemia", "Anemia"], answer: "Thrombocytopenia" },
+    { question: "What is the primary function of the pulmonary circulation?", options: ["Transport oxygen-rich blood to the body", "Transport oxygen-poor blood to the lungs", "Regulate blood pressure", "Filter waste products"], answer: "Transport oxygen-poor blood to the lungs" },
+    { question: "What is the function of the aorta?", options: ["Carry oxygen-poor blood to the lungs", "Carry oxygen-rich blood from the heart to the body", "Regulate blood flow", "Filter blood"], answer: "Carry oxygen-rich blood from the heart to the body" },
+    { question: "Which cells are involved in the inflammatory response?", options: ["Erythrocytes", "Neutrophils", "Thrombocytes", "Lymphocytes"], answer: "Neutrophils" },
+    { question: "What is the term for the formation of blood cells?", options: ["Hematopoiesis", "Hemolysis", "Erythropoiesis", "Thrombopoiesis"], answer: "Hematopoiesis" },
+    { question: "Which of the following is a function of the liver in blood physiology?", options: ["Produce erythropoietin", "Filter toxins", "Store iron", "All of the above"], answer: "All of the above" },
+    { question: "What is the role of the kidneys in blood pressure regulation?", options: ["Produce renin", "Filter blood", "Secrete hormones", "All of the above"], answer: "All of the above" },
+    { question: "What type of leukocyte is primarily responsible for producing antibodies?", options: ["B lymphocytes", "T lymphocytes", "Monocytes", "Neutrophils"], answer: "B lymphocytes" },
+    { question: "What is the role of fibrin in blood?", options: ["Transport oxygen", "Clot blood", "Regulate pH", "Fight infections"], answer: "Clot blood" },
+    { question: "What is the primary gas transported by hemoglobin?", options: ["Carbon dioxide", "Nitrogen", "Oxygen", "Hydrogen"], answer: "Oxygen" },
+    { question: "Which component of blood is primarily involved in the transport of nutrients and waste products?", options: ["Red blood cells", "White blood cells", "Platelets", "Plasma"], answer: "Plasma" },
+    { question: "Which blood component is primarily responsible for maintaining blood viscosity?", options: ["Red blood cells", "White blood cells", "Platelets", "Plasma proteins"], answer: "Red blood cells" },
+    { question: "What is the term for the pressure exerted by blood against the walls of blood vessels?", options: ["Osmotic pressure", "Hydrostatic pressure", "Oncotic pressure", "Systolic pressure"], answer: "Hydrostatic pressure" },
+    { question: "What is the primary function of the circulatory system?", options: ["Distribute hormones", "Transport oxygen and nutrients", "Remove waste products", "All of the above"], answer: "All of the above" },
+    { question: "Which type of blood vessel is responsible for carrying blood back to the heart?", options: ["Arteries", "Veins", "Capillaries", "Arterioles"], answer: "Veins" },
+    { question: "What is the average blood volume in an adult human?", options: ["1-2 liters", "3-4 liters", "5-6 liters", "7-8 liters"], answer: "5-6 liters" },
+    { question: "What type of feedback mechanism is most common in the human body?", options: ["Positive feedback", "Negative feedback", "Neutral feedback", "Adaptive feedback"], answer: "Negative feedback" },
+    { question: "What is the primary mechanism by which water moves across cell membranes?", options: ["Active transport", "Facilitated diffusion", "Simple diffusion", "Osmosis"], answer: "Osmosis" },
+    { question: "Which cellular structure is primarily responsible for regulating the movement of substances in and out of the cell?", options: ["Nucleus", "Mitochondria", "Plasma membrane", "Endoplasmic reticulum"], answer: "Plasma membrane" },
+    { question: "What process involves the active transport of ions against their concentration gradient?", options: ["Facilitated diffusion", "Osmosis", "Endocytosis", "Active transport"], answer: "Active transport" },
+    { question: "What is the term for the movement of substances from an area of higher concentration to an area of lower concentration?", options: ["Active transport", "Facilitated diffusion", "Simple diffusion", "Osmosis"], answer: "Simple diffusion" },
+    { question: "What is the primary purpose of negative feedback in homeostasis?", options: ["Amplify changes", "Stabilize physiological functions", "Create imbalances", "None of the above"], answer: "Stabilize physiological functions" },
+    { question: "Which process is responsible for the reabsorption of glucose in the kidneys?", options: ["Active transport", "Facilitated diffusion", "Osmosis", "Endocytosis"], answer: "Active transport" },
+    { question: "What type of membrane transport requires energy (ATP)?", options: ["Passive transport", "Facilitated diffusion", "Active transport", "Osmosis"], answer: "Active transport" },
+    { question: "What is the primary function of the endoplasmic reticulum?", options: ["Protein synthesis and lipid metabolism", "Energy production", "Waste elimination", "Cell division"], answer: "Protein synthesis and lipid metabolism" },
+
+
+        // Add more questions as needed
+    ];
+
+    // Shuffle and limit the question bank to a maximum of 50 questions
+    const selectedQuestions = questionBank.sort(() => 0.5 - Math.random()).slice(0, 50);
+
+    let currentPage = 0;
+    let totalScore = 0;
+
+    function displayQuestions(page) {
+        const quizContainer = document.getElementById('quizContainer');
+        quizContainer.innerHTML = ''; // Clear previous questions
+
+        const start = page * 2;  // Show 2 questions per page
+        const end = start + 2;
+        const questionsForPage = selectedQuestions.slice(start, end);
+
+        questionsForPage.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                <h3>${start + index + 1}. ${q.question}</h3>
+                <div class="options">
+                    ${q.options.map((option, idx) => `
+                        <label>
+                            <input type="radio" name="question${start + index}" value="${option}">
+                            ${option}
+                        </label><br>
+                    `).join('')}
+                </div>
+            `;
+            quizContainer.appendChild(questionDiv);
+        });
+
+        // Update pagination and button visibility
+        document.getElementById('pageIndicator').textContent = `Page ${page + 1} of ${Math.ceil(selectedQuestions.length / 2)}`;
+        document.getElementById('prevButton').style.display = currentPage === 0 ? 'none' : 'inline-block';
+        document.getElementById('nextButton').style.display = (currentPage === Math.ceil(selectedQuestions.length / 2) - 1) ? 'none' : 'inline-block';
+        document.getElementById('submitButton').style.display = (currentPage === Math.ceil(selectedQuestions.length / 2) - 1) ? 'inline-block' : 'none';
+    }
+
+    function calculateScore() {
+        totalScore = 0;
+        selectedQuestions.forEach((q, index) => {
+            const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+            if (selectedOption && selectedOption.value === q.answer) {
+                totalScore++;
+            }
+        });
+    }
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        currentPage++;
+        displayQuestions(currentPage);
+    });
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            displayQuestions(currentPage);
+        }
+    });
+
+    document.getElementById('goButton').addEventListener('click', () => {
+        const pageInput = document.getElementById('pageInput').value;
+        const pageIndex = parseInt(pageInput) - 1;
+
+        if (pageIndex >= 0 && pageIndex < Math.ceil(selectedQuestions.length / 2)) {
+            currentPage = pageIndex;
+            displayQuestions(currentPage);
+        }
+    });
+
+    document.getElementById('submitButton').addEventListener('click', () => {
+        calculateScore();
+        const quizContainer = document.getElementById('quizContainer');
+        quizContainer.innerHTML = `<h2>Your Score: ${totalScore} / ${selectedQuestions.length}</h2>`;
+        document.getElementById('prevButton').style.display = 'none';
+        document.getElementById('nextButton').style.display = 'none';
+        document.getElementById('submitButton').style.display = 'none';
+        document.getElementById('pageInput').style.display = 'none';
+        document.getElementById('goButton').style.display = 'none';
+    });
+
+    // Initialize quiz
+    displayQuestions(currentPage);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Respi and Cvs Physiology Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .question h3 {
+            margin-bottom: 10px;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination input {
+            width: 50px;
+            text-align: center;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header>Respiratory and Cvs Physiology Quiz</header>
+<div class="container">
+    <div id="quizContainer"></div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <button class="btn" id="prevButton" style="display: none;">Previous</button>
+        <button class="btn" id="nextButton">Next</button>
+        <button class="btn" id="submitButton" style="display: none;">Submit</button>
+    </div>
+
+    <!-- Page Indicator -->
+    <div class="pagination" id="pageIndicator">Page 1</div>
+
+    <!-- Go to Page -->
+    <div class="goto-page">
+        <label for="pageInput">Go to page: </label>
+        <input type="number" id="pageInput" min="1" />
+        <button class="btn" id="goButton">Go</button>
+    </div>
+</div>
+
+<script>
+    // Upper limb-specific question bank with one example question
+    const questionBank = [
+        { question: "What is the primary function of the pulmonary circulation?", options: ["Transport oxygen-rich blood to the body", "Transport oxygen-poor blood to the lungs", "Regulate blood pressure", "Filter waste products"], answer: "Transport oxygen-poor blood to the lungs" },
+                { question: "Which structure prevents backflow of blood in the heart?", options: ["Valves", "Septum", "Aorta", "Coronary arteries"], answer: "Valves" },
+                 { question: "What is the normal resting heart rate for an adult?", options: ["40–60 bpm", "60–100 bpm", "100–120 bpm", "120–150 bpm"], answer: "60–100 bpm" },
+  { question: "Which heart valve is responsible for preventing backflow into the left ventricle?", options: ["Aortic valve", "Mitral valve", "Tricuspid valve", "Pulmonary valve"], answer: "Aortic valve" },
+  { question: "The pacemaker of the heart is located in which node?", options: ["SA node", "AV node", "Bundle of His", "Purkinje fibers"], answer: "SA node" },
+  { question: "Which law explains the relationship between the pressure and volume of the heart?", options: ["Frank-Starling Law", "Boyle's Law", "Laplace's Law", "Bernoulli's Principle"], answer: "Frank-Starling Law" },
+  { question: "What is the primary function of hemoglobin in the blood?", options: ["Transport oxygen", "Regulate pH", "Fight infections", "Transport hormones"], answer: "Transport oxygen" },
+  { question: "What percentage of blood is typically composed of plasma?", options: ["45%", "55%", "65%", "75%"], answer: "55%" },
+  { question: "Which phase of the cardiac cycle is associated with ventricular contraction?", options: ["Systole", "Diastole", "Isovolumetric relaxation", "Ejection phase"], answer: "Systole" },
+  { question: "Which of the following is responsible for increasing heart rate?", options: ["Sympathetic nervous system", "Parasympathetic nervous system", "Somatic nervous system", "Enteric nervous system"], answer: "Sympathetic nervous system" },
+  { question: "What is the average cardiac output for a healthy adult at rest?", options: ["2 L/min", "5 L/min", "10 L/min", "15 L/min"], answer: "5 L/min" },
+  { question: "Which blood vessels are primarily responsible for regulating blood pressure?", options: ["Arterioles", "Veins", "Capillaries", "Venules"], answer: "Arterioles" },
+  { question: "Which component of the ECG represents atrial depolarization?", options: ["P wave", "QRS complex", "T wave", "U wave"], answer: "P wave" },
+  { question: "The 'Lub' sound of the heart is caused by the closure of which valves?", options: ["AV valves", "Semilunar valves", "Aortic and pulmonary valves", "Mitral and tricuspid valves"], answer: "AV valves" },
+  { question: "Which factor does not directly influence blood pressure?", options: ["Heart rate", "Blood viscosity", "Arterial radius", "Lung capacity"], answer: "Lung capacity" },
+  { question: "Where is the vasomotor center located?", options: ["Medulla oblongata", "Cerebellum", "Pons", "Spinal cord"], answer: "Medulla oblongata" },
+  { question: "What is the primary force that drives blood flow in the systemic circulation?", options: ["Blood pressure", "Osmotic pressure", "Lung expansion", "Blood viscosity"], answer: "Blood pressure" },
+  { question: "Which hormone causes the kidneys to retain water and increase blood pressure?", options: ["Aldosterone", "Cortisol", "Antidiuretic hormone", "Epinephrine"], answer: "Antidiuretic hormone" },
+  { question: "What is the normal range for systolic blood pressure in an adult?", options: ["80-100 mmHg", "100-120 mmHg", "120-140 mmHg", "140-160 mmHg"], answer: "100-120 mmHg" },
+  { question: "Which structure in the heart prevents the backflow of blood from the right ventricle into the right atrium?", options: ["Tricuspid valve", "Bicuspid valve", "Aortic valve", "Pulmonary valve"], answer: "Tricuspid valve" },
+  { question: "Which protein in blood is essential for clot formation?", options: ["Fibrin", "Hemoglobin", "Albumin", "Immunoglobulin"], answer: "Fibrin" },
+  { question: "In which type of blood vessel is the velocity of blood flow the slowest?", options: ["Capillaries", "Arteries", "Veins", "Arterioles"], answer: "Capillaries" },
+  { question: "Which part of the brain controls the respiratory rhythm?", options: ["Medulla oblongata", "Cerebellum", "Thalamus", "Frontal lobe"], answer: "Medulla oblongata" },
+  { question: "What is the primary muscle involved in breathing?", options: ["Diaphragm", "Intercostal muscles", "Pectoralis major", "Latissimus dorsi"], answer: "Diaphragm" },
+  { question: "What is the normal tidal volume in a healthy adult?", options: ["150 mL", "300 mL", "500 mL", "700 mL"], answer: "500 mL" },
+  { question: "Oxygen binds to which part of the hemoglobin molecule?", options: ["Heme", "Globin", "Iron", "Protein chain"], answer: "Heme" },
+  { question: "What term describes the maximum amount of air that can be exhaled after a maximum inhalation?", options: ["Vital capacity", "Tidal volume", "Inspiratory reserve volume", "Expiratory reserve volume"], answer: "Vital capacity" },
+  { question: "What percentage of oxygen is transported dissolved in plasma?", options: ["1.5%", "10%", "20%", "50%"], answer: "1.5%" },
+  { question: "Which gas law describes the relationship between pressure and volume in the lungs?", options: ["Boyle's Law", "Dalton's Law", "Henry's Law", "Charles' Law"], answer: "Boyle's Law" },
+  { question: "Which receptor type in the carotid bodies responds to changes in blood pH?", options: ["Chemoreceptors", "Baroreceptors", "Mechanoreceptors", "Thermoreceptors"], answer: "Chemoreceptors" },
+  { question: "Which structure prevents food from entering the trachea during swallowing?", options: ["Epiglottis", "Larynx", "Vocal cords", "Esophagus"], answer: "Epiglottis" },
+  { question: "What is the partial pressure of oxygen (PaO2) in arterial blood?", options: ["40 mmHg", "60 mmHg", "80 mmHg", "100 mmHg"], answer: "100 mmHg" },
+  { question: "What is the total lung capacity (TLC) in a healthy adult?", options: ["2-3 liters", "3-4 liters", "5-6 liters", "6-7 liters"], answer: "6-7 liters" },
+  { question: "Which lung volume cannot be measured directly by spirometry?", options: ["Residual volume", "Tidal volume", "Vital capacity", "Inspiratory reserve volume"], answer: "Residual volume" },
+  { question: "What is the primary driver for increased ventilation during exercise?", options: ["Increased CO2", "Decreased O2", "Increased pH", "Increased temperature"], answer: "Increased CO2" },
+  { question: "Which condition is characterized by hyperinflation of the lungs and decreased alveolar surface area?", options: ["Emphysema", "Pneumonia", "Asthma", "Bronchitis"], answer: "Emphysema" },
+  { question: "What is the term for the amount of air remaining in the lungs after a normal exhalation?", options: ["Functional residual capacity", "Residual volume", "Inspiratory reserve volume", "Expiratory reserve volume"], answer: "Functional residual capacity" },
+  { question: "What is the primary function of surfactant in the lungs?", options: ["Reduce surface tension", "Increase surface area", "Trap particles", "Regulate oxygen diffusion"], answer: "Reduce surface tension" },
+  { question: "Which lung zone has the highest perfusion during normal breathing?", options: ["Base", "Apex", "Middle", "Equal throughout"], answer: "Base" },
+  { question: "Which cells in the alveoli are responsible for gas exchange?", options: ["Type I alveolar cells", "Type II alveolar cells", "Macrophages", "Ciliated cells"], answer: "Type I alveolar cells" },
+  { question: "What is the normal respiratory rate for an adult at rest?", options: ["8-12 breaths/min", "12-16 breaths/min", "16-20 breaths/min", "20-24 breaths/min"], answer: "12-16 breaths/min" },
+  { question: "Which structure carries deoxygenated blood to the lungs?", options: ["Pulmonary artery", "Pulmonary vein", "Bronchial artery", "Aorta"], answer: "Pulmonary artery" },
+
+
+        // Add more questions as needed
+    ];
+
+    // Shuffle and limit the question bank to a maximum of 50 questions
+    const selectedQuestions = questionBank.sort(() => 0.5 - Math.random()).slice(0, 50);
+
+    let currentPage = 0;
+    let totalScore = 0;
+
+    function displayQuestions(page) {
+        const quizContainer = document.getElementById('quizContainer');
+        quizContainer.innerHTML = ''; // Clear previous questions
+
+        const start = page * 2;  // Show 2 questions per page
+        const end = start + 2;
+        const questionsForPage = selectedQuestions.slice(start, end);
+
+        questionsForPage.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                <h3>${start + index + 1}. ${q.question}</h3>
+                <div class="options">
+                    ${q.options.map((option, idx) => `
+                        <label>
+                            <input type="radio" name="question${start + index}" value="${option}">
+                            ${option}
+                        </label><br>
+                    `).join('')}
+                </div>
+            `;
+            quizContainer.appendChild(questionDiv);
+        });
+
+        // Update pagination and button visibility
+        document.getElementById('pageIndicator').textContent = `Page ${page + 1} of ${Math.ceil(selectedQuestions.length / 2)}`;
+        document.getElementById('prevButton').style.display = currentPage === 0 ? 'none' : 'inline-block';
+        document.getElementById('nextButton').style.display = (currentPage === Math.ceil(selectedQuestions.length / 2) - 1) ? 'none' : 'inline-block';
+        document.getElementById('submitButton').style.display = (currentPage === Math.ceil(selectedQuestions.length / 2) - 1) ? 'inline-block' : 'none';
+    }
+
+    function calculateScore() {
+        totalScore = 0;
+        selectedQuestions.forEach((q, index) => {
+            const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+            if (selectedOption && selectedOption.value === q.answer) {
+                totalScore++;
+            }
+        });
+    }
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        currentPage++;
+        displayQuestions(currentPage);
+    });
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            displayQuestions(currentPage);
+        }
+    });
+
+    document.getElementById('goButton').addEventListener('click', () => {
+        const pageInput = document.getElementById('pageInput').value;
+        const pageIndex = parseInt(pageInput) - 1;
+
+        if (pageIndex >= 0 && pageIndex < Math.ceil(selectedQuestions.length / 2)) {
+            currentPage = pageIndex;
+            displayQuestions(currentPage);
+        }
+    });
+
+    document.getElementById('submitButton').addEventListener('click', () => {
+        calculateScore();
+        const quizContainer = document.getElementById('quizContainer');
+        quizContainer.innerHTML = `<h2>Your Score: ${totalScore} / ${selectedQuestions.length}</h2>`;
+        document.getElementById('prevButton').style.display = 'none';
+        document.getElementById('nextButton').style.display = 'none';
+        document.getElementById('submitButton').style.display = 'none';
+        document.getElementById('pageInput').style.display = 'none';
+        document.getElementById('goButton').style.display = 'none';
+    });
+
+    // Initialize quiz
+    displayQuestions(currentPage);
+</script>
+
+</body>
+</html>

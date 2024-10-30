@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensory and special senses Physiology Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .question h3 {
+            margin-bottom: 10px;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination input {
+            width: 50px;
+            text-align: center;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header>Sensory and Special Senses Physiology (Fifth Block) Quiz</header>
+<div class="container">
+    <div id="quizContainer"></div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <button class="btn" id="prevButton" style="display: none;">Previous</button>
+        <button class="btn" id="nextButton">Next</button>
+        <button class="btn" id="submitButton" style="display: none;">Submit</button>
+    </div>
+
+    <!-- Page Indicator -->
+    <div class="pagination" id="pageIndicator">Page 1</div>
+
+    <!-- Go to Page -->
+    <div class="goto-page">
+        <label for="pageInput">Go to page: </label>
+        <input type="number" id="pageInput" min="1" />
+        <button class="btn" id="goButton">Go</button>
+    </div>
+</div>
+
+<script>
+    // Upper limb-specific question bank with one example question
+    const questionBank = [
+          { question: "Which part of the eye is responsible for focusing light?", options: ["Cornea", "Lens", "Retina", "Iris"], answer: "Lens" },
+                { question: "What is the primary function of the cochlea?", options: ["Balance", "Vision", "Hearing", "Smell"], answer: "Hearing" },
+                { question: "What type of receptors detect changes in temperature?", options: ["Thermoreceptors", "Mechanoreceptors", "Chemoreceptors", "Photoreceptors"], answer: "Thermoreceptors" },
+  { question: "Which sensory receptor type is responsible for detecting pain?", options: ["Nociceptors", "Thermoreceptors", "Photoreceptors", "Mechanoreceptors"], answer: "Nociceptors" },
+  { question: "What part of the brain processes most sensory information?", options: ["Thalamus", "Cerebellum", "Medulla oblongata", "Hypothalamus"], answer: "Thalamus" },
+  { question: "The dorsal column-medial lemniscal pathway is primarily involved in which sense?", options: ["Touch and proprioception", "Pain", "Vision", "Smell"], answer: "Touch and proprioception" },
+  { question: "What term describes the process by which a stimulus is converted into an electrical signal?", options: ["Transduction", "Translation", "Transmission", "Integration"], answer: "Transduction" },
+  { question: "Which fiber type transmits fast, sharp pain?", options: ["A-delta fibers", "C fibers", "B fibers", "A-beta fibers"], answer: "A-delta fibers" },
+  { question: "Where are somatosensory signals primarily processed?", options: ["Primary somatosensory cortex", "Prefrontal cortex", "Occipital lobe", "Temporal lobe"], answer: "Primary somatosensory cortex" },
+  { question: "Which sensory pathway decussates in the spinal cord?", options: ["Spinothalamic tract", "Dorsal column-medial lemniscal pathway", "Optic nerve", "Trigeminal pathway"], answer: "Spinothalamic tract" },
+  { question: "What type of receptors detect pressure and stretch in the skin?", options: ["Mechanoreceptors", "Nociceptors", "Thermoreceptors", "Chemoreceptors"], answer: "Mechanoreceptors" },
+  { question: "What is the name of the tactile receptors located in the dermal papillae?", options: ["Meissner's corpuscles", "Pacinian corpuscles", "Merkel cells", "Ruffini endings"], answer: "Meissner's corpuscles" },
+
+  // Vision
+  { question: "Which part of the eye focuses light onto the retina?", options: ["Lens", "Iris", "Cornea", "Optic disc"], answer: "Lens" },
+  { question: "What is the function of the rods in the retina?", options: ["Low-light vision", "Color vision", "Sharp vision", "Depth perception"], answer: "Low-light vision" },
+  { question: "Which photopigment is found in rods?", options: ["Rhodopsin", "Photopsin", "Melanopsin", "Iodopsin"], answer: "Rhodopsin" },
+  { question: "What part of the eye adjusts to control the amount of light entering?", options: ["Pupil", "Lens", "Cornea", "Retina"], answer: "Pupil" },
+  { question: "The optic nerve transmits visual information to which part of the brain?", options: ["Occipital lobe", "Temporal lobe", "Frontal lobe", "Parietal lobe"], answer: "Occipital lobe" },
+  { question: "In which part of the retina are cones primarily concentrated?", options: ["Fovea", "Periphery", "Optic disc", "Ciliary body"], answer: "Fovea" },
+  { question: "What is the role of the photoreceptors in the retina?", options: ["Convert light into electrical signals", "Detect sound", "Sense pressure", "Relay taste information"], answer: "Convert light into electrical signals" },
+  { question: "Which structure is responsible for the production of aqueous humor?", options: ["Ciliary body", "Lens", "Cornea", "Retina"], answer: "Ciliary body" },
+  { question: "What is the blind spot in the eye?", options: ["Point where the optic nerve exits the eye", "Fovea", "Peripheral vision", "Lens center"], answer: "Point where the optic nerve exits the eye" },
+  { question: "Which cells in the retina are primarily responsible for detecting color?", options: ["Cones", "Rods", "Ganglion cells", "Bipolar cells"], answer: "Cones" },
+
+  // Hearing
+  { question: "Where are the auditory receptors (hair cells) located?", options: ["Cochlea", "Ossicles", "Tympanic membrane", "Eustachian tube"], answer: "Cochlea" },
+  { question: "What is the function of the ossicles in the middle ear?", options: ["Amplify sound vibrations", "Detect head position", "Transmit visual signals", "Regulate pressure"], answer: "Amplify sound vibrations" },
+  { question: "The organ of Corti is located in which part of the ear?", options: ["Cochlea", "Semicircular canals", "Middle ear", "Eustachian tube"], answer: "Cochlea" },
+  { question: "Which nerve transmits auditory signals to the brain?", options: ["Vestibulocochlear nerve", "Optic nerve", "Olfactory nerve", "Vagus nerve"], answer: "Vestibulocochlear nerve" },
+  { question: "What structure in the cochlea responds to specific frequencies of sound?", options: ["Basilar membrane", "Oval window", "Tympanic membrane", "Round window"], answer: "Basilar membrane" },
+  { question: "Which structure separates the outer ear from the middle ear?", options: ["Tympanic membrane", "Oval window", "Round window", "Cochlea"], answer: "Tympanic membrane" },
+  { question: "The Eustachian tube helps to equalize pressure in which part of the ear?", options: ["Middle ear", "Outer ear", "Inner ear", "Cochlea"], answer: "Middle ear" },
+  { question: "What fluid fills the scala tympani and scala vestibuli in the cochlea?", options: ["Perilymph", "Endolymph", "Serum", "Cerebrospinal fluid"], answer: "Perilymph" },
+  { question: "Where is the round window located?", options: ["Cochlea", "Middle ear", "Outer ear", "Eustachian tube"], answer: "Cochlea" },
+  { question: "Which part of the ear contains the semicircular canals?", options: ["Inner ear", "Outer ear", "Middle ear", "Eustachian tube"], answer: "Inner ear" },
+
+  // Taste and Smell
+  { question: "What is the primary function of taste buds?", options: ["Detect taste", "Sense smell", "Measure pressure", "Detect temperature"], answer: "Detect taste" },
+  { question: "What taste sensation is primarily triggered by glutamate?", options: ["Umami", "Sweet", "Sour", "Bitter"], answer: "Umami" },
+  { question: "Which cranial nerve is involved in transmitting taste from the anterior two-thirds of the tongue?", options: ["Facial nerve (VII)", "Glossopharyngeal nerve (IX)", "Vagus nerve (X)", "Trigeminal nerve (V)"], answer: "Facial nerve (VII)" },
+  { question: "Which part of the brain processes olfactory signals?", options: ["Olfactory bulb", "Thalamus", "Cerebellum", "Occipital lobe"], answer: "Olfactory bulb" },
+  { question: "What type of receptors are involved in the sense of smell?", options: ["Chemoreceptors", "Mechanoreceptors", "Photoreceptors", "Thermoreceptors"], answer: "Chemoreceptors" },
+  { question: "The glossopharyngeal nerve carries taste information from which part of the tongue?", options: ["Posterior one-third", "Anterior two-thirds", "Tip of the tongue", "Lateral sides"], answer: "Posterior one-third" },
+  { question: "Which region of the brain processes taste information?", options: ["Gustatory cortex", "Somatosensory cortex", "Occipital lobe", "Cerebellum"], answer: "Gustatory cortex" },
+  { question: "The olfactory nerve is also known by which cranial nerve number?", options: ["Cranial nerve I", "Cranial nerve II", "Cranial nerve III", "Cranial nerve IV"], answer: "Cranial nerve I" },
+  { question: "What is the main function of the olfactory epithelium?", options: ["Detect odorants", "Detect sound", "Detect pressure", "Relay visual signals"], answer: "Detect odorants" },
+  { question: "Which area of the brain is associated with the emotional responses to smell?", options: ["Limbic system", "Occipital lobe", "Medulla oblongata", "Cerebellum"], answer: "Limbic system" },
+
+  // Vestibular System
+  { question: "What is the primary function of the vestibular system?", options: ["Maintain balance", "Detect sound", "Process taste", "Control vision"], answer: "Maintain balance" },
+  { question: "Which structure detects rotational acceleration of the head?", options: ["Semicircular canals", "Cochlea", "Eustachian tube", "Ossicles"], answer: "Semicircular canals" },
+  { question: "The utricle and saccule detect which type of acceleration?", options: ["Linear", "Rotational", "Sound-based", "Temperature-based"], answer: "Linear" },
+  { question: "The hair cells in the vestibular system are located within structures called what?", options: ["Ampullae", "Tympanic membrane", "Stapes", "Organ of Corti"], answer: "Ampullae" },
+  { question: "What fluid is found in the vestibular system that helps detect head movement?", options: ["Endolymph", "Perilymph", "Cerebrospinal fluid", "Blood"], answer: "Endolymph" },
+  { question: "Which nerve transmits signals from the vestibular system to the brain?", options: ["Vestibulocochlear nerve", "Olfactory nerve", "Optic nerve", "Glossopharyngeal nerve"], answer: "Vestibulocochlear nerve" },
+
+
+        // Add more questions as needed
+    ];
+
+    // Shuffle and limit the question bank to a maximum of 50 questions
+    const selectedQuestions = questionBank.sort(() => 0.5 - Math.random()).slice(0, 50);
+
+    let currentPage = 0;
+    let totalScore = 0;
+
+    function displayQuestions(page) {
+        const quizContainer = document.getElementById('quizContainer');
+        quizContainer.innerHTML = ''; // Clear previous questions
+
+        const start = page * 2;  // Show 2 questions per page
+        const end = start + 2;
+        const questionsForPage = selectedQuestions.slice(start, end);
+
+        questionsForPage.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                <h3>${start + index + 1}. ${q.question}</h3>
+                <div class="options">
+                    ${q.options.map((option, idx) => `
+                        <label>
+                            <input type="radio" name="question${start + index}" value="${option}">
+                            ${option}
+                        </label><br>
+                    `).join('')}
+                </div>
+            `;
+            quizContainer.appendChild(questionDiv);
+        });
+
+        // Update pagination and button visibility
+        document.getElementById('pageIndicator').textContent = `Page ${page + 1} of ${Math.ceil(selectedQuestions.length / 2)}`;
+        document.getElementById('prevButton').style.display = currentPage === 0 ? 'none' : 'inline-block';
+        document.getElementById('nextButton').style.display = (currentPage === Math.ceil(selectedQuestions.length / 2) - 1) ? 'none' : 'inline-block';
+        document.getElementById('submitButton').style.display = (currentPage === Math.ceil(selectedQuestions.length / 2) - 1) ? 'inline-block' : 'none';
+    }
+
+    function calculateScore() {
+        totalScore = 0;
+        selectedQuestions.forEach((q, index) => {
+            const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+            if (selectedOption && selectedOption.value === q.answer) {
+                totalScore++;
+            }
+        });
+    }
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        currentPage++;
+        displayQuestions(currentPage);
+    });
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            displayQuestions(currentPage);
+        }
+    });
+
+    document.getElementById('goButton').addEventListener('click', () => {
+        const pageInput = document.getElementById('pageInput').value;
+        const pageIndex = parseInt(pageInput) - 1;
+
+        if (pageIndex >= 0 && pageIndex < Math.ceil(selectedQuestions.length / 2)) {
+            currentPage = pageIndex;
+            displayQuestions(currentPage);
+        }
+    });
+
+    document.getElementById('submitButton').addEventListener('click', () => {
+        calculateScore();
+        const quizContainer = document.getElementById('quizContainer');
+        quizContainer.innerHTML = `<h2>Your Score: ${totalScore} / ${selectedQuestions.length}</h2>`;
+        document.getElementById('prevButton').style.display = 'none';
+        document.getElementById('nextButton').style.display = 'none';
+        document.getElementById('submitButton').style.display = 'none';
+        document.getElementById('pageInput').style.display = 'none';
+        document.getElementById('goButton').style.display = 'none';
+    });
+
+    // Initialize quiz
+    displayQuestions(currentPage);
+</script>
+
+</body>
+</html>
